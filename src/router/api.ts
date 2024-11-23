@@ -1,7 +1,13 @@
 import express from "express";
+import { UserController } from "../controller/user-controller";
+import { authMiddleware } from "../middleware/auth-middleware";
 
-export const apiRouter = express.Router();
-// apiRouter.use(authMiddleware);
+const apiRouter = express.Router();
 
-// User Api
-// apiRouter.get("/api/users/current", UserController.get);
+// Endpoint untuk mendapatkan profil pengguna (perlu otentikasi)
+apiRouter.get("/profile", authMiddleware, UserController.profile);
+
+// Endpoint untuk memperbarui data pengguna (perlu otentikasi)
+// apiRouter.put("/profile", authMiddleware, UserController.updateProfile);
+
+export { apiRouter };

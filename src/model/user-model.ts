@@ -1,0 +1,36 @@
+import { User } from "@prisma/client";
+
+export type UserResponse = {
+  name: string;
+  token?: string;
+  created_at: string;
+  updated_at: string;
+};
+
+export type CreateUserRequest = {
+  name: string;
+  email: string;
+  password: string;
+  phone: string;
+  address?: string;
+};
+
+export type LoginUserRequest = {
+  email: string;
+  password: string;
+};
+
+export type UpdateUserRequest = {
+  name?: string;
+  password?: string;
+  phone?: string;
+  address?: string;
+};
+
+export function toUserResponse(user: User): UserResponse {
+  return {
+    name: user.name,
+    created_at: user.created_at.toISOString(),
+    updated_at: user.updated_at.toISOString(),
+  };
+}
