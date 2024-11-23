@@ -3,6 +3,8 @@ import { User } from "@prisma/client";
 export type UserResponse = {
   name: string;
   token?: string;
+  phone?: string;
+  address?: string;
   created_at: string;
   updated_at: string;
 };
@@ -12,7 +14,7 @@ export type CreateUserRequest = {
   email: string;
   password: string;
   phone: string;
-  address?: string;
+  address: string;
 };
 
 export type LoginUserRequest = {
@@ -30,6 +32,16 @@ export type UpdateUserRequest = {
 export function toUserResponse(user: User): UserResponse {
   return {
     name: user.name,
+    created_at: user.created_at.toISOString(),
+    updated_at: user.updated_at.toISOString(),
+  };
+}
+
+export function toDetailUserResponse(user: User): UserResponse {
+  return {
+    name: user.name,
+    phone: user.phone,
+    address: user.address,
     created_at: user.created_at.toISOString(),
     updated_at: user.updated_at.toISOString(),
   };

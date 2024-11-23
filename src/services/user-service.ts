@@ -4,7 +4,9 @@ import { ResponseError } from "../error/response-error";
 import {
   CreateUserRequest,
   LoginUserRequest,
+  toDetailUserResponse,
   toUserResponse,
+  UpdateUserRequest,
   UserResponse,
 } from "../model/user-model";
 import { UserValidation } from "../validation/user-validation";
@@ -60,6 +62,13 @@ export class UserService {
       throw new ResponseError(401, "Email or password is wrong");
     }
 
+    // Hapus semua token lama untuk user ini
+    await prismaClient.token.deleteMany({
+      where: {
+        user_id: user.id,
+      },
+    });
+
     // Generate JWT Token
     const token = jwt.sign(
       {
@@ -86,5 +95,61 @@ export class UserService {
     userResponse.token = token;
 
     return userResponse;
+  }
+
+  // Method untuk mendapatkan profil user berdasarkan userId
+  static async get(userId: string): Promise<UserResponse> {
+    const user = await prismaClient.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+
+    if (!user) {
+      throw new ResponseError(404, "User not found");
+    }
+
+    return toDetailUserResponse(user);
+  }
+
+  static async update(
+    userId: string,
+    request: UpdateUserRequest
+  ): Promise<UserResponse> {
+    const updateRequest = Validation.validate(UserValidation.UPDATE, request);
+
+    const user = await prismaClient.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+
+    if (!user) {
+      throw new ResponseError(404, "User not found");
+    }
+
+    const updatedData: UpdateUserRequest = {};
+
+    if (updateRequest.name) {
+      updatedData.name = updateRequest.name;
+    }
+    if (updateRequest.phone) {
+      updatedData.phone = updateRequest.phone;
+    }
+    if (updateRequest.address) {
+      updatedData.address = updateRequest.address;
+    }
+    if (updateRequest.password) {
+      updatedData.password = bcrypt.hashSync(updateRequest.password, 10);
+    }
+
+    const result = await prismaClient.user.update({
+      where: {
+        id: user.id,
+      },
+      data: updatedData,
+    });
+
+    return toDetailUserResponse(result);
   }
 }

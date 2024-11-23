@@ -36,19 +36,44 @@ export class UserController {
   }
 
   // Endpoint untuk mengambil profil pengguna
-  static async profile(req: UserRequest, res: Response, next: NextFunction) {
+  static async get(req: UserRequest, res: Response, next: NextFunction) {
     try {
-      const user = req.user; // Data pengguna dari middleware
-      if (!user) {
+      const userId = req.user?.id;
+
+      if (!userId) {
         res.status(401).json({
           message: "Unauthorized",
         });
         return;
       }
 
+      const response = await UserService.get(userId);
       res.status(200).json({
-        message: "User profile retrieved successfully",
-        data: user,
+        message: "Profile retrieved successfully",
+        data: response,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async update(req: UserRequest, res: Response, next: NextFunction) {
+    try {
+      const request: UpdateUserRequest = req.body as UpdateUserRequest;
+      const userId = req.user?.id;
+
+      if (!userId) {
+        res.status(401).json({
+          message: "Unauthorized",
+        });
+        return;
+      }
+
+      const response = await UserService.update(userId, request);
+
+      res.status(200).json({
+        message: "Profile updated successfully",
+        data: response,
       });
     } catch (error) {
       next(error);
