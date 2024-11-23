@@ -1,0 +1,129 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  CUSTOMER
+  OWNER
+  ADMIN
+}
+
+enum FacilityCategory {
+  FUTSAL
+  MINI_SOCCER
+  BADMINTON
+  BASKETBALL
+  TENNIS
+  VOLLEYBALL
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
+enum PaymentMethod {
+  BANK_TRANSFER
+  E_WALLET
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+}
+
+model User {
+  id                   String    @id @default(uuid())
+  name                 String    @db.VarChar(255)
+  email                String    @unique @db.VarChar(100)
+  password             String    @db.VarChar(100)
+  phone                String    @unique @db.VarChar(20)
+  role                 UserRole  @default(CUSTOMER)
+  address              String?   @db.VarChar(255)
+  email_verified_at    DateTime?
+  reset_password_token String?   @db.VarChar(255)
+  created_at           DateTime  @default(now())
+  updated_at           DateTime  @updatedAt
+
+  bookings   Booking[]
+  facilities Facility[] @relation("OwnerFacilities")
+  tokens     token[]
+
+  @@map("users")
+}
+
+model Facility {
+  id              String           @id @default(uuid())
+  name            String           @db.VarChar(255)
+  category        FacilityCategory
+  description     String           @db.Text
+  price_per_hour  Decimal          @db.Decimal(10, 2)
+  available_slots Json             @db.Json
+  owner_id        String
+  created_at      DateTime         @default(now())
+  updated_at      DateTime         @updatedAt
+
+  bookings Booking[]
+  owner    User      @relation("OwnerFacilities", fields: [owner_id], references: [id])
+
+  @@map("facilities")
+}
+
+model Booking {
+  id           String        @id @default(uuid())
+  user_id      String
+  facility_id  String
+  booking_date DateTime
+  start_time   DateTime
+  end_time     DateTime
+  total_price  Decimal       @db.Decimal(10, 2)
+  status       BookingStatus @default(PENDING)
+  created_at   DateTime      @default(now())
+  updated_at   DateTime      @updatedAt
+
+  user     User      @relation(fields: [user_id], references: [id])
+  facility Facility  @relation(fields: [facility_id], references: [id])
+  payments payment[]
+
+  @@map("bookings")
+}
+
+model payment {
+  id             String        @id @default(uuid())
+  booking_id     String
+  payment_method PaymentMethod
+  payment_amount Decimal       @db.Decimal(10, 2)
+  payment_date   DateTime
+  status         PaymentStatus @default(PENDING)
+  created_at     DateTime      @default(now())
+  updated_at     DateTime      @updatedAt
+
+  booking Booking @relation(fields: [booking_id], references: [id])
+
+  @@map("payments")
+}
+
+model token {
+  id         String   @id @default(uuid())
+  user_id    String
+  token      String   @db.VarChar(255)
+  expired_at DateTime
+  created_at DateTime @default(now())
+
+  user User @relation(fields: [user_id], references: [id])
+
+  @@map("tokens")
+}
