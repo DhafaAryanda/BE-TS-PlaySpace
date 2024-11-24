@@ -2,6 +2,7 @@ import express from "express";
 import { UserController } from "../controller/user-controller";
 import { authMiddleware } from "../middleware/auth-middleware";
 import { FacilityController } from "../controller/facility-controller";
+import { BookingController } from "../controller/booking-controller";
 
 const apiRouter = express.Router();
 
@@ -25,6 +26,18 @@ apiRouter.put(
   "/api/facilities/update/:facilityId",
   authMiddleware,
   FacilityController.update
+);
+
+// BOOKINGS
+apiRouter.post(
+  "/api/facilities/:facilityId/bookings",
+  authMiddleware,
+  BookingController.create
+);
+apiRouter.patch(
+  "/api/facilities/bookings/:bookingId/cancel",
+  authMiddleware,
+  BookingController.cancel
 );
 
 export { apiRouter };

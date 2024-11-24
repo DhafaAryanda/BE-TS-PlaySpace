@@ -74,7 +74,7 @@ export class FacilityController {
 
   static async get(req: Request, res: Response, next: NextFunction) {
     try {
-      const facilityId = req.params.id;
+      const facilityId = req.params.facilityId;
       const response = await FacilityService.get(facilityId);
       res.status(200).json({
         message: "Facility retrieved successfully",
