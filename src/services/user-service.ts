@@ -152,4 +152,28 @@ export class UserService {
 
     return toDetailUserResponse(result);
   }
+
+  static async logout(userId: string): Promise<UserResponse> {
+    const user = await prismaClient.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+
+    if (!user) {
+      throw new ResponseError(404, "User not found");
+    }
+
+    const deletedTokens = await prismaClient.token.deleteMany({
+      where: {
+        user_id: user.id,
+      },
+    });
+
+    if (deletedTokens.count === 0) {
+      throw new ResponseError(404, "No token found or this user not logged in");
+    }
+
+    return toUserResponse(user);
+  }
 }

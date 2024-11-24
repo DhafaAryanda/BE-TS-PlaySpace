@@ -79,4 +79,25 @@ export class UserController {
       next(error);
     }
   }
+
+  static async logout(req: UserRequest, res: Response, next: NextFunction) {
+    try {
+      const userId = req.user?.id;
+      if (!userId) {
+        res.status(401).json({
+          message: "Unauthorized",
+        });
+        return;
+      }
+
+      const response = await UserService.logout(userId);
+
+      res.status(200).json({
+        message: "User logged out successfully",
+        data: response,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
