@@ -66,15 +66,15 @@ model User {
 }
 
 model Facility {
-  id              String           @id @default(uuid())
-  name            String           @db.VarChar(255)
-  category        FacilityCategory
-  description     String           @db.Text
-  price_per_hour  Decimal          @db.Decimal(10, 2)
-  available_slots Json             @db.Json
-  owner_id        String
-  created_at      DateTime         @default(now())
-  updated_at      DateTime         @updatedAt
+  id             String           @id @default(uuid())
+  name           String           @db.VarChar(255)
+  category       FacilityCategory
+  description    String           @db.Text
+  price_per_hour Decimal          @db.Decimal(10, 2)
+  // available_slots Json             @db.Json
+  owner_id       String
+  created_at     DateTime         @default(now())
+  updated_at     DateTime         @updatedAt
 
   bookings Booking[]
   owner    User      @relation("OwnerFacilities", fields: [owner_id], references: [id])
