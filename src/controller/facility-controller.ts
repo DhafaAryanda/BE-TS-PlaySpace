@@ -17,6 +17,7 @@ export class FacilityController {
         res.status(401).json({
           message: "Unauthorized",
         });
+        return;
       }
 
       const response = await FacilityService.create(request, ownerId);

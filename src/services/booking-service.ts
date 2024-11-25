@@ -99,10 +99,7 @@ export class BookingService {
       );
     }
 
-    if (
-      booking.status !== BookingStatus.PENDING &&
-      booking.status !== BookingStatus.CONFIRMED
-    ) {
+    if (booking.status !== BookingStatus.PENDING || BookingStatus.CONFIRMED) {
       throw new ResponseError(
         400,
         "Only pending or confirmed booking can be cancelled"

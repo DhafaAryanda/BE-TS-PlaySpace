@@ -3,6 +3,7 @@ import { UserController } from "../controller/user-controller";
 import { authMiddleware } from "../middleware/auth-middleware";
 import { FacilityController } from "../controller/facility-controller";
 import { BookingController } from "../controller/booking-controller";
+import { PaymentController } from "../controller/payment-controller";
 
 const apiRouter = express.Router();
 
@@ -38,6 +39,18 @@ apiRouter.patch(
   "/api/facilities/bookings/:bookingId/cancel",
   authMiddleware,
   BookingController.cancel
+);
+
+// PAYMENTS
+apiRouter.post(
+  "/api/payments/:bookingId",
+  authMiddleware,
+  PaymentController.create
+);
+apiRouter.get(
+  "/api/payments/:paymentId",
+  authMiddleware,
+  PaymentController.getById
 );
 
 export { apiRouter };

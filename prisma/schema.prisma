@@ -96,12 +96,12 @@ model Booking {
 
   user     User     @relation(fields: [user_id], references: [id])
   facility Facility @relation(fields: [facility_id], references: [id])
-  payment  payment? @relation("BookingPayment")
+  payment  Payment? @relation("BookingPayment")
 
   @@map("bookings")
 }
 
-model payment {
+model Payment {
   id             String        @id @default(uuid())
   booking_id     String        @unique
   payment_method PaymentMethod
