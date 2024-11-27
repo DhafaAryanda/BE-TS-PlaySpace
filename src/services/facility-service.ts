@@ -1,3 +1,4 @@
+import { FacilityCategory } from "@prisma/client";
 import { prismaClient } from "../app/database";
 import { ResponseError } from "../error/response-error";
 import {
@@ -78,12 +79,42 @@ export class FacilityService {
       where: {
         id: facilityId,
       },
+      include: {
+        owner: true,
+      },
     });
 
     if (!facility) {
       throw new ResponseError(404, "Facility not found");
     }
 
-    return toFacilityResponse(facility);
+    return {
+      ...toFacilityResponse(facility),
+      owner_avatar: facility.owner.avatar,
+    };
+  }
+
+  static async getCategories(): Promise<string[]> {
+    return Object.values(FacilityCategory);
+  }
+
+  static async getAll(): Promise<FacilityResponse[]> {
+    const facilities = await prismaClient.facility.findMany({
+      orderBy: {
+        created_at: "desc",
+      },
+      include: {
+        owner: true,
+      },
+    });
+
+    return facilities.map((facility) => {
+      return {
+        ...toFacilityResponse(facility),
+        owner_avatar: facility.owner.avatar,
+      };
+    });
+
+    // return facilities.map(toFacilityResponse);
   }
 }

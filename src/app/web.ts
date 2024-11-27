@@ -3,6 +3,7 @@ import { publicRouter } from "../router/public-api";
 import { errorMiddleware } from "../middleware/error-middleware";
 import { apiRouter } from "../router/api";
 import dotenv from "dotenv";
+import cors from "cors";
 
 dotenv.config();
 
@@ -13,6 +14,9 @@ if (!process.env.JWT_SECRET) {
 
 export const web = express();
 web.use(express.json());
+
+web.use(cors()); // This will allow all origins by default
+
 web.use(publicRouter);
 web.use(apiRouter);
 web.use(errorMiddleware);

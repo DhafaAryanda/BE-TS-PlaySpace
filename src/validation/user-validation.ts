@@ -7,6 +7,7 @@ export class UserValidation {
     name: z.string().min(1).max(100),
     phone: z.string().min(1).max(16),
     address: z.string().min(1).max(255).optional(),
+    avatar: z.string().min(1).max(255).optional(),
   });
 
   static readonly LOGIN: ZodType = z.object({

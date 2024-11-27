@@ -5,7 +5,8 @@ export class FacilityValidation {
     name: z.string().min(1).max(100),
     category: z.string().min(1).max(100),
     description: z.string().min(1).max(255),
-    price_per_hour: z.string().min(1).max(100),
+    thumbnail: z.string().min(1).max(255),
+    price_per_hour: z.number().min(0),
     owner_id: z.string().min(1).max(100).optional(),
   });
 
@@ -13,6 +14,6 @@ export class FacilityValidation {
     name: z.string().min(1).max(100).optional(),
     category: z.string().min(1).max(100).optional(),
     description: z.string().min(1).max(255).optional(),
-    price_per_hour: z.string().min(1).max(100).optional(),
+    price_per_hour: z.number().min(0).optional(),
   });
 }

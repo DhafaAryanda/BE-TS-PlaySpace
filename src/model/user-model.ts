@@ -7,6 +7,7 @@ export type UserResponse = {
   address?: string;
   created_at: string;
   updated_at: string;
+  avatar?: string;
 };
 
 export type CreateUserRequest = {
@@ -15,6 +16,7 @@ export type CreateUserRequest = {
   password: string;
   phone: string;
   address: string;
+  avatar: string;
 };
 
 export type LoginUserRequest = {
@@ -27,6 +29,7 @@ export type UpdateUserRequest = {
   password?: string;
   phone?: string;
   address?: string;
+  avatar?: string;
 };
 
 export function toUserResponse(user: User): UserResponse {
@@ -42,6 +45,7 @@ export function toDetailUserResponse(user: User): UserResponse {
     name: user.name,
     phone: user.phone,
     address: user.address,
+    avatar: user.avatar,
     created_at: user.created_at.toISOString(),
     updated_at: user.updated_at.toISOString(),
   };
