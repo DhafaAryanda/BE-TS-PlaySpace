@@ -86,18 +86,6 @@ export class FacilityController {
     }
   }
 
-  static async getCategories(req: Request, res: Response, next: NextFunction) {
-    try {
-      const categories = await FacilityService.getCategories();
-      res.status(200).json({
-        message: "Facility categories retrieved successfully",
-        data: categories,
-      });
-    } catch (error) {
-      next(error);
-    }
-  }
-
   static async getAll(req: Request, res: Response, next: NextFunction) {
     try {
       const response = await FacilityService.getAll();

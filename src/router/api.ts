@@ -4,6 +4,7 @@ import { authMiddleware } from "../middleware/auth-middleware";
 import { FacilityController } from "../controller/facility-controller";
 import { BookingController } from "../controller/booking-controller";
 import { PaymentController } from "../controller/payment-controller";
+import { CategoryController } from "../controller/category-controller";
 
 const apiRouter = express.Router();
 
@@ -53,4 +54,11 @@ apiRouter.get(
   PaymentController.getById
 );
 
+// CATEGORIES
+apiRouter.post("/api/categories", authMiddleware, CategoryController.create);
+apiRouter.patch(
+  "/api/categories/:categoryId",
+  authMiddleware,
+  CategoryController.update
+);
 export { apiRouter };

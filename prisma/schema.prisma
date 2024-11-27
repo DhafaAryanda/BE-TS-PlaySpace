@@ -19,14 +19,14 @@ enum UserRole {
   ADMIN
 }
 
-enum FacilityCategory {
-  FUTSAL
-  MINI_SOCCER
-  BADMINTON
-  BASKETBALL
-  TENNIS
-  VOLLEYBALL
-}
+// enum FacilityCategoryType {
+//   FUTSAL
+//   MINI_SOCCER
+//   BADMINTON
+//   BASKETBALL
+//   TENNIS
+//   VOLLEYBALL
+// }
 
 enum BookingStatus {
   PENDING
@@ -66,19 +66,32 @@ model User {
   @@map("users")
 }
 
+model Category {
+  id          String   @id @default(uuid())
+  name        String   @db.VarChar(255)
+  description String   @db.Text
+  icon        String   @db.VarChar(255)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  facilities Facility[] @relation("CategoryFacilities")
+
+  @@map("categories")
+}
+
 model Facility {
-  id             String           @id @default(uuid())
-  name           String           @db.VarChar(255)
-  thumbnail      String           @db.VarChar(255)
-  category       FacilityCategory
-  description    String           @db.Text
-  price_per_hour Decimal          @db.Decimal(10, 2)
-
+  id             String   @id @default(uuid())
+  name           String   @db.VarChar(255)
+  thumbnail      String   @db.VarChar(255)
+  category_id    String
+  description    String   @db.Text
+  price_per_hour Decimal  @db.Decimal(10, 2)
   // available_slots Json             @db.Json
-  owner_id   String
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  owner_id       String
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
 
+  category Category  @relation("CategoryFacilities", fields: [category_id], references: [id])
   bookings Booking[]
   owner    User      @relation("OwnerFacilities", fields: [owner_id], references: [id])
 

@@ -1,9 +1,9 @@
-import { Facility, FacilityCategory, User } from "@prisma/client";
+import { Facility } from "@prisma/client";
 
 export type FacilityResponse = {
   id: string;
   name: string;
-  category: FacilityCategory;
+  category_id: string;
   description: string;
   thumbnail: string;
   price_per_hour: number;
@@ -15,7 +15,7 @@ export type FacilityResponse = {
 
 export type CreateFacilityRequest = {
   name: string;
-  category: FacilityCategory;
+  category_id: string;
   description: string;
   price_per_hour: number;
   thumbnail: string;
@@ -24,7 +24,7 @@ export type CreateFacilityRequest = {
 
 export type UpdateFacilityRequest = {
   name?: string;
-  category?: FacilityCategory;
+  category_id?: string;
   description?: string;
   price_per_hour?: number;
 };
@@ -33,7 +33,7 @@ export function toFacilityResponse(facility: Facility): FacilityResponse {
   return {
     id: facility.id,
     name: facility.name,
-    category: facility.category,
+    category_id: facility.category_id,
     description: facility.description,
     price_per_hour: parseFloat(facility.price_per_hour.toFixed(2)),
     thumbnail: facility.thumbnail,

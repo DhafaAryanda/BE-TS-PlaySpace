@@ -1,4 +1,3 @@
-import { FacilityCategory } from "@prisma/client";
 import { prismaClient } from "../app/database";
 import { ResponseError } from "../error/response-error";
 import {
@@ -54,8 +53,8 @@ export class FacilityService {
     if (updateRequest.name) {
       updatedData.name = updateRequest.name;
     }
-    if (updateRequest.category) {
-      updatedData.category = updateRequest.category;
+    if (updateRequest.category_id) {
+      updatedData.category_id = updateRequest.category_id;
     }
     if (updateRequest.description) {
       updatedData.description = updateRequest.description;
@@ -94,10 +93,6 @@ export class FacilityService {
     };
   }
 
-  static async getCategories(): Promise<string[]> {
-    return Object.values(FacilityCategory);
-  }
-
   static async getAll(): Promise<FacilityResponse[]> {
     const facilities = await prismaClient.facility.findMany({
       orderBy: {
@@ -114,7 +109,5 @@ export class FacilityService {
         owner_avatar: facility.owner.avatar,
       };
     });
-
-    // return facilities.map(toFacilityResponse);
   }
 }
