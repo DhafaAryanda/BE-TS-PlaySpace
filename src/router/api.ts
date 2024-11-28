@@ -5,6 +5,7 @@ import { FacilityController } from "../controller/facility-controller";
 import { BookingController } from "../controller/booking-controller";
 import { PaymentController } from "../controller/payment-controller";
 import { CategoryController } from "../controller/category-controller";
+import { BenefitController } from "../controller/benefit-controller";
 
 const apiRouter = express.Router();
 
@@ -24,6 +25,13 @@ apiRouter.put(
   "/api/facilities/update/:facilityId",
   authMiddleware,
   FacilityController.update
+);
+
+// BENEFITS
+apiRouter.post(
+  "/api/facilities/benefits",
+  authMiddleware,
+  BenefitController.create
 );
 
 // BOOKINGS
