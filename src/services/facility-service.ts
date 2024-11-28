@@ -80,6 +80,7 @@ export class FacilityService {
       },
       include: {
         owner: true,
+        category: true,
       },
     });
 
@@ -89,7 +90,15 @@ export class FacilityService {
 
     return {
       ...toFacilityResponse(facility),
-      owner_avatar: facility.owner.avatar,
+      owner: {
+        id: facility.owner.id,
+        name: facility.owner.name,
+        avatar: facility.owner.avatar,
+      },
+      category: {
+        id: facility.category.id,
+        name: facility.category.name,
+      },
     };
   }
 
@@ -100,6 +109,7 @@ export class FacilityService {
       },
       include: {
         owner: true,
+        category: true,
       },
     });
 
@@ -107,6 +117,10 @@ export class FacilityService {
       return {
         ...toFacilityResponse(facility),
         owner_avatar: facility.owner.avatar,
+        category: {
+          id: facility.category.id,
+          name: facility.category.name,
+        },
       };
     });
   }

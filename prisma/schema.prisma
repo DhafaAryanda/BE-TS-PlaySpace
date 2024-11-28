@@ -92,10 +92,22 @@ model Facility {
   updated_at     DateTime @updatedAt
 
   category Category  @relation("CategoryFacilities", fields: [category_id], references: [id])
+  benefits Benefit[]
   bookings Booking[]
   owner    User      @relation("OwnerFacilities", fields: [owner_id], references: [id])
 
   @@map("facilities")
+}
+
+model Benefit {
+  id          String   @id @default(uuid())
+  facility_id String
+  name        String   @db.VarChar(255)
+  description String   @db.Text
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  facility Facility @relation(fields: [facility_id], references: [id])
 }
 
 model Booking {

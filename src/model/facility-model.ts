@@ -7,10 +7,15 @@ export type FacilityResponse = {
   description: string;
   thumbnail: string;
   price_per_hour: number;
-  owner_id: string;
-  owner_avatar?: string;
-  created_at: string;
-  updated_at: string;
+  owner: {
+    id: string;
+    name: string;
+    avatar: string;
+  };
+  category: {
+    id: string;
+    name: string;
+  };
 };
 
 export type CreateFacilityRequest = {
@@ -29,7 +34,7 @@ export type UpdateFacilityRequest = {
   price_per_hour?: number;
 };
 
-export function toFacilityResponse(facility: Facility): FacilityResponse {
+export function toFacilityResponse(facility: any): FacilityResponse {
   return {
     id: facility.id,
     name: facility.name,
@@ -37,8 +42,14 @@ export function toFacilityResponse(facility: Facility): FacilityResponse {
     description: facility.description,
     price_per_hour: parseFloat(facility.price_per_hour.toFixed(2)),
     thumbnail: facility.thumbnail,
-    owner_id: facility.owner_id,
-    created_at: facility.created_at.toISOString(),
-    updated_at: facility.updated_at.toISOString(),
+    owner: {
+      id: facility.owner.id,
+      name: facility.owner.name,
+      avatar: facility.owner.avatar,
+    },
+    category: {
+      id: facility.category.id,
+      name: facility.category.name,
+    },
   };
 }

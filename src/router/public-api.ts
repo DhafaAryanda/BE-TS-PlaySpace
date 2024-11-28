@@ -14,4 +14,12 @@ publicRouter.post("/api/auth/login", UserController.login); // Login User
 publicRouter.get("/api/facilities", FacilityController.getAll); // Get All Facilities
 
 publicRouter.get("/api/categories", CategoryController.getAll);
+
+publicRouter.get("/api/facilities/:facilityId", FacilityController.get);
+
+// apiRouter.get(
+//   "/api/facilities/:facilityId",
+//   authMiddleware,
+//   FacilityController.get
+// );
 export { publicRouter };

@@ -14,11 +14,7 @@ apiRouter.put("/api/users/update", authMiddleware, UserController.update);
 apiRouter.delete("/api/users/logout", authMiddleware, UserController.logout);
 
 // FACILITIES
-apiRouter.get(
-  "/api/facilities/:facilityId",
-  authMiddleware,
-  FacilityController.get
-);
+
 apiRouter.post(
   "/api/facilities/create",
   authMiddleware,
