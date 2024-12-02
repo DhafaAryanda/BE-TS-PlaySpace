@@ -2,26 +2,26 @@ import { Payment, PaymentMethod, PaymentStatus } from "@prisma/client";
 
 export type PaymentDataResponse = {
   id: string;
-  booking_id: string;
-  payment_method: PaymentMethod;
-  payment_amount: string;
-  payment_date: Date;
+  bookingId: string;
+  paymentMethod: PaymentMethod;
+  paymentAmount: string;
+  paymentDate: Date;
   status: PaymentStatus;
 };
 
 export type CreatePaymentRequest = {
-  // booking_id: string;
-  payment_method: PaymentMethod;
-  payment_amount: string;
+  // bookingId: string;
+  paymentMethod: PaymentMethod;
+  paymentAmount: string;
 };
 
 export function toPaymentsResponse(payment: Payment): PaymentDataResponse {
   return {
     id: payment.id,
-    booking_id: payment.booking_id,
-    payment_method: payment.payment_method,
-    payment_amount: payment.payment_amount.toFixed(2),
-    payment_date: payment.payment_date,
+    bookingId: payment.bookingId,
+    paymentMethod: payment.paymentMethod,
+    paymentAmount: payment.paymentAmount.toFixed(2),
+    paymentDate: payment.paymentDate,
     status: payment.status,
   };
 }

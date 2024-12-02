@@ -19,17 +19,17 @@ export class BookingService {
       request
     );
 
-    if (request.start_time >= request.end_time) {
+    if (request.startTime >= request.endTime) {
       throw new ResponseError(400, "Start time must be earlier than end time");
     }
 
     // Validasi konflik waktu
     const existingBooking = await prismaClient.booking.findFirst({
       where: {
-        facility_id: createRequest.facility_id,
+        facilityId: createRequest.facilityId,
         AND: [
-          { start_time: { lt: request.end_time } },
-          { end_time: { gt: request.start_time } },
+          { startTime: { lt: request.endTime } },
+          { endTime: { gt: request.startTime } },
         ],
       },
     });
@@ -40,7 +40,7 @@ export class BookingService {
 
     const facility = await prismaClient.facility.findUnique({
       where: {
-        id: createRequest.facility_id,
+        id: createRequest.facilityId,
       },
     });
 
@@ -48,18 +48,18 @@ export class BookingService {
       throw new ResponseError(404, "Facility not found");
     }
 
-    const startTime = new Date(request.start_time);
-    const endTime = new Date(request.end_time);
+    const startTime = new Date(request.startTime);
+    const endTime = new Date(request.endTime);
 
     const durationHours =
       (endTime.getTime() - startTime.getTime()) / (1000 * 60 * 60);
 
-    const totalPrice = durationHours * facility.price_per_hour.toNumber();
+    const totalPrice = durationHours * facility.pricePerHour.toNumber();
 
     const bookingData = {
       ...createRequest,
-      user_id: userId,
-      total_price: totalPrice,
+      userId: userId,
+      totalPrice: totalPrice,
       status: BookingStatus.PENDING,
     };
 
@@ -92,14 +92,10 @@ export class BookingService {
       throw new ResponseError(404, "Booking not found");
     }
 
-    if (booking.user_id !== userId && userRole !== "ADMIN") {
-      throw new ResponseError(
-        403,
-        "You are not authorized to cancel this booking"
-      );
-    }
-
-    if (booking.status !== BookingStatus.PENDING || BookingStatus.CONFIRMED) {
+    if (
+      booking.status !== BookingStatus.PENDING &&
+      booking.status !== BookingStatus.CONFIRMED
+    ) {
       throw new ResponseError(
         400,
         "Only pending or confirmed booking can be cancelled"
@@ -112,7 +108,7 @@ export class BookingService {
       },
       data: {
         status: BookingStatus.CANCELLED,
-        updated_at: new Date(),
+        updatedAt: new Date(),
       },
     });
 

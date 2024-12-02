@@ -29,7 +29,7 @@ export class PaymentService {
       throw new ResponseError(404, "Booking not found");
     }
 
-    if (booking.user_id !== userId) {
+    if (booking.userId !== userId) {
       throw new ResponseError(403, "Forbidden");
     }
 
@@ -39,8 +39,8 @@ export class PaymentService {
 
     const paymentData = {
       ...createRequest,
-      booking_id: bookingId,
-      payment_date: new Date(),
+      bookingId: bookingId,
+      paymentDate: new Date(),
       status: PaymentStatus.PAID,
     };
 
@@ -78,11 +78,14 @@ export class PaymentService {
     });
 
     if (!userId) {
-      throw new ResponseError(401, "Unauthorized");
+      throw new ResponseError(401, "Unauthorized: You are not logged in");
     }
 
-    if (payment?.booking.user_id !== userId) {
-      throw new ResponseError(403, "Forbidden");
+    if (payment?.booking.userId !== userId) {
+      throw new ResponseError(
+        403,
+        "Forbidden: You are not the owner of this payment"
+      );
     }
 
     if (!payment) {

@@ -1,68 +1,70 @@
 import express from "express";
 import { UserController } from "../controller/user-controller";
-import { authMiddleware } from "../middleware/auth-middleware";
 import { FacilityController } from "../controller/facility-controller";
-import { BookingController } from "../controller/booking-controller";
-import { PaymentController } from "../controller/payment-controller";
+import { authenticateToken } from "../middleware/auth-middleware";
 import { CategoryController } from "../controller/category-controller";
 import { BenefitController } from "../controller/benefit-controller";
+import { BookingController } from "../controller/booking-controller";
+import { PaymentController } from "../controller/payment-controller";
 
 const apiRouter = express.Router();
 
 // USERS
-apiRouter.get("/api/users/profile", authMiddleware, UserController.get);
-apiRouter.put("/api/users/update", authMiddleware, UserController.update);
-apiRouter.delete("/api/users/logout", authMiddleware, UserController.logout);
+apiRouter.get("/api/users", authenticateToken, UserController.get);
+apiRouter.put("/api/users/update", authenticateToken, UserController.update);
+apiRouter.delete("/api/users/logout", authenticateToken, UserController.logout);
+
+// CATEGORIES
+apiRouter.post("/api/categories", authenticateToken, CategoryController.create);
+apiRouter.patch(
+  "/api/categories/:categoryId",
+  authenticateToken,
+  CategoryController.update
+);
 
 // FACILITIES
 
 apiRouter.post(
   "/api/facilities/create",
-  authMiddleware,
+  authenticateToken,
   FacilityController.create
 );
-apiRouter.put(
-  "/api/facilities/update/:facilityId",
-  authMiddleware,
-  FacilityController.update
-);
+
+// apiRouter.patch(
+//   "/api/facilities/:facilityId",
+//   authenticateToken,
+//   FacilityController.update
+// );
 
 // BENEFITS
 apiRouter.post(
   "/api/facilities/benefits",
-  authMiddleware,
+  authenticateToken,
   BenefitController.create
 );
 
 // BOOKINGS
 apiRouter.post(
   "/api/facilities/:facilityId/bookings",
-  authMiddleware,
+  authenticateToken,
   BookingController.create
 );
 apiRouter.patch(
   "/api/facilities/bookings/:bookingId/cancel",
-  authMiddleware,
+  authenticateToken,
   BookingController.cancel
 );
 
-// PAYMENTS
+// // PAYMENTS
 apiRouter.post(
   "/api/payments/:bookingId",
-  authMiddleware,
+  authenticateToken,
   PaymentController.create
 );
 apiRouter.get(
   "/api/payments/:paymentId",
-  authMiddleware,
+  authenticateToken,
   PaymentController.getById
 );
 
-// CATEGORIES
-apiRouter.post("/api/categories", authMiddleware, CategoryController.create);
-apiRouter.patch(
-  "/api/categories/:categoryId",
-  authMiddleware,
-  CategoryController.update
-);
 export { apiRouter };

@@ -14,64 +14,104 @@ export class FacilityService {
     request: CreateFacilityRequest,
     ownerId: string
   ): Promise<FacilityResponse> {
-    const createRequest = Validation.validate(
+    // Validasi input menggunakan aturan yang telah ditentukan
+    const validatedRequest = Validation.validate(
       FacilityValidation.CREATE,
       request
     );
 
+    // Memeriksa apakah kategori yang dimaksud ada di database
+    const categoryExists = await prismaClient.category.findUnique({
+      where: { id: validatedRequest.categoryId },
+    });
+
+    if (!categoryExists) {
+      throw new Error(
+        `Category with id ${validatedRequest.categoryId} does not exist`
+      );
+    }
+
+    // Membuat fasilitas baru di database
     const facility = await prismaClient.facility.create({
       data: {
-        ...createRequest,
-        owner_id: ownerId,
+        ...validatedRequest,
+        ownerId,
       },
     });
 
-    return toFacilityResponse(facility);
+    // Mengembalikan respons fasilitas yang telah dibuat
+    return {
+      id: facility.id,
+      name: facility.name,
+      categoryId: facility.categoryId,
+      description: facility.description,
+      pricePerHour: parseFloat(facility.pricePerHour.toFixed(2)),
+      thumbnail: facility.thumbnail,
+      owner: {
+        id: facility.ownerId,
+        name: facility.ownerId,
+        avatar: facility.ownerId || null,
+      },
+      category: {
+        id: facility.categoryId,
+        name: facility.categoryId,
+      },
+    };
   }
 
-  static async update(
-    facilityId: string,
-    request: UpdateFacilityRequest
-  ): Promise<FacilityResponse> {
-    const updateRequest = Validation.validate(
-      FacilityValidation.UPDATE,
-      request
-    );
+  // static async update(
+  //   facilityId: string,
+  //   ownerId: string,
+  //   request: UpdateFacilityRequest
+  // ): Promise<FacilityResponse> {
+  //   const updateRequest = Validation.validate(
+  //     FacilityValidation.UPDATE,
+  //     request
+  //   );
 
-    const facility = await prismaClient.facility.findUnique({
-      where: {
-        id: facilityId,
-      },
-    });
+  //   const facility = await prismaClient.facility.findUnique({
+  //     where: {
+  //       id: facilityId,
+  //     },
+  //   });
 
-    if (!facility) {
-      throw new ResponseError(404, "Facility not found");
-    }
+  //   const isOwner = facility?.ownerId === ownerId;
 
-    const updatedData: UpdateFacilityRequest = {};
+  //   if (!isOwner) {
+  //     throw new ResponseError(
+  //       403,
+  //       "Forbidden: You are not the owner of this facility"
+  //     );
+  //   }
 
-    if (updateRequest.name) {
-      updatedData.name = updateRequest.name;
-    }
-    if (updateRequest.category_id) {
-      updatedData.category_id = updateRequest.category_id;
-    }
-    if (updateRequest.description) {
-      updatedData.description = updateRequest.description;
-    }
-    if (updateRequest.price_per_hour) {
-      updatedData.price_per_hour = updateRequest.price_per_hour;
-    }
+  //   if (!facility) {
+  //     throw new ResponseError(404, "Facility not found");
+  //   }
 
-    const result = await prismaClient.facility.update({
-      where: {
-        id: facility.id,
-      },
-      data: updatedData,
-    });
+  //   const updatedData: UpdateFacilityRequest = {};
 
-    return toFacilityResponse(result);
-  }
+  //   if (updateRequest.name) {
+  //     updatedData.name = updateRequest.name;
+  //   }
+  //   if (updateRequest.categoryId) {
+  //     updatedData.categoryId = updateRequest.categoryId;
+  //   }
+  //   if (updateRequest.description) {
+  //     updatedData.description = updateRequest.description;
+  //   }
+  //   if (updateRequest.pricePerHour) {
+  //     updatedData.pricePerHour = updateRequest.pricePerHour;
+  //   }
+
+  //   const result = await prismaClient.facility.update({
+  //     where: {
+  //       id: facility.id,
+  //     },
+  //     data: updatedData,
+  //   });
+
+  //   return toFacilityResponse(result);
+  // }
 
   static async get(facilityId: string): Promise<FacilityResponse> {
     const facility = await prismaClient.facility.findUnique({
@@ -93,7 +133,7 @@ export class FacilityService {
       owner: {
         id: facility.owner.id,
         name: facility.owner.name,
-        avatar: facility.owner.avatar,
+        avatar: facility.owner.avatar || null,
       },
       category: {
         id: facility.category.id,
@@ -105,7 +145,7 @@ export class FacilityService {
   static async getAll(): Promise<FacilityResponse[]> {
     const facilities = await prismaClient.facility.findMany({
       orderBy: {
-        created_at: "desc",
+        createdAt: "desc",
       },
       include: {
         owner: true,
@@ -116,7 +156,7 @@ export class FacilityService {
     return facilities.map((facility) => {
       return {
         ...toFacilityResponse(facility),
-        owner_avatar: facility.owner.avatar,
+        ownerAvatar: facility.owner.avatar,
         category: {
           id: facility.category.id,
           name: facility.category.name,

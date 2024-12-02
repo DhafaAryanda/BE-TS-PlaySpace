@@ -15,10 +15,18 @@ export class BookingController {
         });
         return;
       }
-      //   const request: CreateBookingRequest = req.body as CreateBookingRequest;
+
+      const isCustomer = req.user?.role === "CUSTOMER";
+      if (!isCustomer) {
+        res.status(403).json({
+          message: "Forbidden: Only customer can create booking",
+        });
+        return;
+      }
+
       const request: CreateBookingRequest = {
         ...req.body,
-        facility_id: facilityId,
+        facilityId: facilityId,
       };
       const response = await BookingService.create(request, userId);
 
@@ -40,6 +48,13 @@ export class BookingController {
       if (!userId || !userRole) {
         res.status(401).json({
           message: "Unauthorized",
+        });
+        return;
+      }
+
+      if (userRole !== "ADMIN" && userRole !== "CUSTOMER") {
+        res.status(403).json({
+          message: "Forbidden: Only customer or admin can cancel booking",
         });
         return;
       }

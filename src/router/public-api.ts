@@ -18,12 +18,8 @@ publicRouter.get("/api/categories", CategoryController.getAll);
 
 publicRouter.get("/api/facilities/:facilityId", FacilityController.get);
 
-// Benefits
+// // Benefits
 publicRouter.get("/api/facilities/:facilityId/benefits", BenefitController.get);
 
-// apiRouter.get(
-//   "/api/facilities/:facilityId",
-//   authMiddleware,
-//   FacilityController.get
-// );
+publicRouter.get("/api/facilities/:facilityId", FacilityController.get);
 export { publicRouter };

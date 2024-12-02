@@ -2,7 +2,7 @@ import { prismaClient } from "../app/database";
 import { ResponseError } from "../error/response-error";
 import {
   BenefitResponse,
-  CraeteBenefitRequest,
+  CreateBenefitRequest,
   toBenefitResponse,
 } from "../model/benefit-model";
 import { toFacilityResponse } from "../model/facility-model";
@@ -11,7 +11,7 @@ import { Validation } from "../validation/validation";
 
 export class BenefitService {
   static async create(
-    request: CraeteBenefitRequest,
+    request: CreateBenefitRequest,
     facilityId: string,
     ownerId: string
   ): Promise<BenefitResponse> {
@@ -29,10 +29,13 @@ export class BenefitService {
       },
     });
 
-    const isOwner = facility?.owner_id === ownerId;
+    const isOwner = facility?.owner.id === ownerId;
 
     if (!isOwner) {
-      throw new ResponseError(403, "Forbidden");
+      throw new ResponseError(
+        403,
+        "Forbidden: You are not the owner of this facility"
+      );
     }
 
     if (!facility) {
@@ -41,7 +44,7 @@ export class BenefitService {
 
     const benefitCount = await prismaClient.benefit.count({
       where: {
-        facility_id: facilityId,
+        facilityId: facilityId,
       },
     });
 
@@ -52,7 +55,7 @@ export class BenefitService {
     const benefit = await prismaClient.benefit.create({
       data: {
         ...createRequest,
-        facility_id: facilityId,
+        facilityId: facilityId,
       },
     });
 
@@ -62,7 +65,7 @@ export class BenefitService {
   static async get(facilityId: string): Promise<BenefitResponse[]> {
     const benefits = await prismaClient.benefit.findMany({
       where: {
-        facility_id: facilityId,
+        facilityId: facilityId,
       },
     });
 

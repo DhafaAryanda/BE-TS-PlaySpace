@@ -2,13 +2,13 @@ import { Benefit } from "@prisma/client";
 
 export type BenefitResponse = {
   id: string;
-  facility_id: string;
+  facilityId: string;
   name: string;
   description: string;
 };
 
-export type CraeteBenefitRequest = {
-  facility_id: string;
+export type CreateBenefitRequest = {
+  facilityId: string;
   name: string;
   description: string;
 };
@@ -16,7 +16,7 @@ export type CraeteBenefitRequest = {
 export function toBenefitResponse(benefit: Benefit): BenefitResponse {
   return {
     id: benefit.id,
-    facility_id: benefit.facility_id,
+    facilityId: benefit.facilityId,
     name: benefit.name,
     description: benefit.description,
   };

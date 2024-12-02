@@ -1,13 +1,13 @@
 import { NextFunction, Request, Response } from "express";
 import { UserRequest } from "../type/user-request";
-import { CraeteBenefitRequest } from "../model/benefit-model";
+import { CreateBenefitRequest } from "../model/benefit-model";
 import { BenefitService } from "../services/benefit-service";
 
 export class BenefitController {
   static async create(req: UserRequest, res: Response, next: NextFunction) {
     try {
-      const request: CraeteBenefitRequest = req.body as CraeteBenefitRequest;
-      const facilityId = req.body.facility_id;
+      const request: CreateBenefitRequest = req.body as CreateBenefitRequest;
+      const facilityId = req.body.facilityId;
       const ownerId = req.user!.id;
 
       if (!ownerId) {
@@ -37,7 +37,7 @@ export class BenefitController {
       const benefits = await BenefitService.get(facilityId);
 
       res.status(200).json({
-        message: "Success",
+        message: "Benefits retrieved successfully",
         data: benefits,
       });
     } catch (error) {

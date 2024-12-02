@@ -3,14 +3,14 @@ import { Facility } from "@prisma/client";
 export type FacilityResponse = {
   id: string;
   name: string;
-  category_id: string;
+  categoryId: string;
   description: string;
   thumbnail: string;
-  price_per_hour: number;
+  pricePerHour: number;
   owner: {
     id: string;
     name: string;
-    avatar: string;
+    avatar: string | null;
   };
   category: {
     id: string;
@@ -20,32 +20,32 @@ export type FacilityResponse = {
 
 export type CreateFacilityRequest = {
   name: string;
-  category_id: string;
+  categoryId: string;
   description: string;
-  price_per_hour: number;
+  pricePerHour: number;
   thumbnail: string;
-  owner_id: string;
+  ownerId: string;
 };
 
 export type UpdateFacilityRequest = {
   name?: string;
-  category_id?: string;
+  categoryId?: string;
   description?: string;
-  price_per_hour?: number;
+  pricePerHour?: number;
 };
 
 export function toFacilityResponse(facility: any): FacilityResponse {
   return {
     id: facility.id,
     name: facility.name,
-    category_id: facility.category_id,
+    categoryId: facility.categoryId,
     description: facility.description,
-    price_per_hour: parseFloat(facility.price_per_hour.toFixed(2)),
+    pricePerHour: parseFloat(facility.pricePerHour.toFixed(2)),
     thumbnail: facility.thumbnail,
     owner: {
       id: facility.owner.id,
       name: facility.owner.name,
-      avatar: facility.owner.avatar,
+      avatar: facility.owner.avatar || null,
     },
     category: {
       id: facility.category.id,

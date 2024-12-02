@@ -3,7 +3,6 @@ import { ResponseError } from "../error/response-error";
 import {
   CreateUserRequest,
   LoginUserRequest,
-  toDetailUserResponse,
   toUserResponse,
   UpdateUserRequest,
   UserResponse,
@@ -11,7 +10,6 @@ import {
 import { UserValidation } from "../validation/user-validation";
 import { Validation } from "../validation/validation";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 
 export class UserService {
   static async register(request: CreateUserRequest): Promise<UserResponse> {
@@ -61,39 +59,16 @@ export class UserService {
       throw new ResponseError(401, "Email or password is wrong");
     }
 
-    // Hapus semua token lama untuk user ini
-    await prismaClient.token.deleteMany({
-      where: {
-        user_id: user.id,
-      },
-    });
+    return toUserResponse(user);
+  }
 
-    // Generate JWT Token
-    const token = jwt.sign(
-      {
-        id: user.id,
-        email: user.email,
-        role: user.role,
-      },
-      process.env.JWT_SECRET as string,
-      {
-        expiresIn: "1d", // Token berlaku selama 1 hari
-      }
-    );
-
-    // Save token to the database
-    await prismaClient.token.create({
+  static async saveRefreshToken(userId: string, token: string): Promise<any> {
+    return prismaClient.refreshToken.create({
       data: {
+        userId: userId,
         token: token,
-        user_id: user.id,
-        expired_at: new Date(Date.now() + 24 * 60 * 60 * 1000), // Set expired_at to 1 day from now
       },
     });
-
-    const userResponse = toUserResponse(user);
-    userResponse.token = token;
-
-    return userResponse;
   }
 
   // Method untuk mendapatkan profil user berdasarkan userId
@@ -108,7 +83,7 @@ export class UserService {
       throw new ResponseError(404, "User not found");
     }
 
-    return toDetailUserResponse(user);
+    return toUserResponse(user);
   }
 
   static async update(
@@ -149,30 +124,14 @@ export class UserService {
       data: updatedData,
     });
 
-    return toDetailUserResponse(result);
+    return toUserResponse(result);
   }
 
-  static async logout(userId: string): Promise<UserResponse> {
-    const user = await prismaClient.user.findUnique({
+  static async logout(userId: string): Promise<void> {
+    await prismaClient.refreshToken.deleteMany({
       where: {
-        id: userId,
+        userId: userId,
       },
     });
-
-    if (!user) {
-      throw new ResponseError(404, "User not found");
-    }
-
-    const deletedTokens = await prismaClient.token.deleteMany({
-      where: {
-        user_id: user.id,
-      },
-    });
-
-    if (deletedTokens.count === 0) {
-      throw new ResponseError(404, "No token found or this user not logged in");
-    }
-
-    return toUserResponse(user);
   }
 }
