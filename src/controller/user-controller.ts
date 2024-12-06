@@ -40,16 +40,19 @@ export class UserController {
       const response = await UserService.login(request);
       const accessToken = generateAccessToken({
         id: response.id,
+        name: response.name,
         role: response.role,
+        avatar: response.avatar,
       });
 
       const refreshToken = await handleRefreshToken(response.id);
 
-      // res.cookie("refreshToken", refreshToken, {
-      //   httpOnly: true,
-      //   secure: process.env.NODE_ENV === "production",
-      //   sameSite: "strict",
-      // });
+      res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      });
 
       res.status(200).json({
         message: "User logged in successfully",
@@ -66,20 +69,22 @@ export class UserController {
     res: Response,
     next: NextFunction
   ) {
-    const { refreshToken } = req.body;
-
-    if (!refreshToken) {
-      res.status(400).json({
-        message: "Bad request: Missing parameters",
-      });
-      return;
-    }
+    // const { refreshToken } = req.body;
 
     try {
+      const refreshToken = req.cookies.refreshToken;
+      if (!refreshToken) {
+        res.status(400).json({
+          message: "Bad request: Missing parameters",
+        });
+        return;
+      }
+
       const decoded = jwt.verify(
         refreshToken,
         process.env.JWT_REFRESH_SECRET!
       ) as JwtPayload;
+
       if (!decoded || !decoded.id) {
         res.status(400).json({
           message: "Invalid token: Missing user id",
@@ -96,7 +101,7 @@ export class UserController {
 
       if (!storedRefreshToken) {
         res.status(403).json({
-          message: "Invalid token: Token not found",
+          message: "Invalid token",
         });
         return;
       }
@@ -121,10 +126,11 @@ export class UserController {
         id: user.id,
       });
 
-      await prismaClient.refreshToken.deleteMany({
-        where: {
-          userId: user.id,
-        },
+      res.cookie("refreshToken", newRefreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
       });
 
       await prismaClient.refreshToken.create({
@@ -137,14 +143,12 @@ export class UserController {
       res.status(200).json({
         message: "Token refreshed successfully",
         accessToken: newAccessToken,
-        refreshToken: newRefreshToken,
       });
     } catch (error) {
       next(error);
     }
   }
 
-  // Endpoint untuk mengambil profil pengguna
   static async get(req: UserRequest, res: Response, next: NextFunction) {
     try {
       const userId = req.user?.id;

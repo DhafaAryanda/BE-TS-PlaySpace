@@ -71,7 +71,6 @@ export class UserService {
     });
   }
 
-  // Method untuk mendapatkan profil user berdasarkan userId
   static async get(userId: string): Promise<UserResponse> {
     const user = await prismaClient.user.findUnique({
       where: {

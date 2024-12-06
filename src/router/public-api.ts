@@ -23,3 +23,6 @@ publicRouter.get("/api/facilities/:facilityId/benefits", BenefitController.get);
 
 publicRouter.get("/api/facilities/:facilityId", FacilityController.get);
 export { publicRouter };
+
+//Refresh Token
+publicRouter.post("/api/users/refresh-token", UserController.refreshToken);

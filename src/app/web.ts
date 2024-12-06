@@ -4,7 +4,7 @@ import { errorMiddleware } from "../middleware/error-middleware";
 import { apiRouter } from "../router/api";
 import dotenv from "dotenv";
 import cors from "cors";
-
+import cookieParser from "cookie-parser";
 dotenv.config();
 
 // Check if JWT_SECRET is defined
@@ -15,10 +15,22 @@ if (!process.env.JWT_SECRET) {
 export const web = express();
 web.use(express.json());
 
-web.use(cors()); // This will allow all origins by default
+// Tambahkan cookie-parser middleware
+web.use(cookieParser()); // Ini harus diletakkan sebelum middleware router dan lainnya
 
+// CORS setup
+web.use(
+  cors({
+    origin: "http://localhost:3001",
+    credentials: true,
+  })
+); // This will allow all origins by default
+
+// Routing
 web.use(publicRouter);
 web.use(apiRouter);
+
+// Error handling middleware
 web.use(errorMiddleware);
 
 // Menambahkan log untuk memastikan server berjalan
